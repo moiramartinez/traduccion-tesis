@@ -185,7 +185,7 @@ Construction (F): YA99F4L1_ST
 ILO modeled statistics
 
 ```{r message=FALSE, warning=FALSE}
-sector <- read_csv()
+sector <- read_csv('employment_distribution_economic_activity_sex.csv')
 sector$sector2 <- sector  %$% gsub("ECO_DETAILS","sector", classif1)
 sector$sector2 <- sector  %$% gsub("ECO_SECTOR","sector", sector2)
 sector <-  sector %>% filter(grepl("sector", sector2)) %>% select(iso3c = ref_area,year=time,sex,sector=sector2, obs_value)
@@ -211,21 +211,19 @@ Source: [Labor Force Survey](http://www.oecd.org/els/emp/LFS%20Definitions%20-%2
 Unit: Data are presented in percentage of total employees
 
 ```{r, echo = F, include = FALSE}
-time <- OECD::get_dataset("FTPTN_I",
-                  filter = "AUS+AUT+BEL+CAN+CHL+COL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+ISL+IRL+ISR+ITA+JPN+LVA+LTU+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+CRI+BGR+HRV+IDN+MLT+ROU+RUS+ZAF+FTFR.MEN+WOMEN+MW.900000.DE.FT+PT+SH_PT.A", 
-                  pre_formatted = TRUE)
-time <- time %>% select(COUNTRY, SEX, SERIES, obsTime, obsValue) %>% 
-  spread(key = "SERIES", value = "obsValue")
+time <- read_csv('incidence-full-time-part-time.csv')
+time <- time %>% select(REF_AREA, SEX, `Working time arrangement`, TIME_PERIOD, OBS_VALUE) 
+time <- time %>% spread(key = "Working time arrangement", value = "OBS_VALUE")
 time1 <- pivot_wider(time,
                      names_from = "SEX",
-                     values_from = FT:SH_PT) %>%  setnames(old = c("COUNTRY", "obsTime"), new = c("iso3c", "year"))
+                     values_from = c('Full-time', 'Part-time')) %>%  setnames(old = c("REF_AREA", "TIME_PERIOD"), new = c("iso3c", "year"))
 ```
 
 
 ## Informal employment
 ```{r, warning= FALSE}
-informal <- Rilostat::get_ilostat("IFL_XIEM_SEX_ECO_IFL_RT_A")
-informal1 <- informal %>% filter(classif2 == "IFL_COMP_INFEMP" & classif1 == "ECO_TOTNAG_NAG") %>%  select(iso3c=ref_area, sex,year=time, obs_value) %>% pivot_wider(names_from = "sex", values_from = "obs_value")
+informal <- read_csv('informal-employment.csv')
+informal1 <- informal %>% select(iso3c=ref_area, year=time, 'obs_value', 'sex') %>% pivot_wider(names_from = "sex", values_from = "obs_value")
 ```
 
 Definition: Informal employment comprises persons who in their main jobs were unincorporated enterprises that produce at least partly for the market and are not registered. It excludes households that produce exclusively for own final use, subsistence agriculture, construction of own dwellings, etc. Some characteristics[^1] of informal imployment are: 
@@ -252,13 +250,9 @@ Source: The default direct source for total hours worked is generally the OECD A
 Unit: Average Annual rate of growth. Base year 2010
 
 ```{r, echo= F}
-gdp <- OECD::get_dataset("PDB_GR",
-                  filter = "AUS+AUT+BEL+CAN+CHL+COL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+ISL+IRL+ISR+ITA+JPN+KOR+LVA+LTU+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+BRA+BGR+CHN+CRI+HRV+IND+IDN+PER+ROU+RUS+ZAF.T_GDPPOP_V+T_GDPHRS_V+T_GDPEMP_V+T_HRSPOP+T_ULCEX.GRW", 
-                  pre_formatted = TRUE)
-gdp1 <- gdp %>% select(LOCATION, SUBJECT,obsTime, obsValue) 
-gdp1 <- pivot_wider(gdp1,
-                    names_from = "SUBJECT",
-                    values_from =  "obsValue") %>% setnames(old = c("LOCATION", "obsTime"), new = c("iso3c", "year"))
+gdp <- read_csv('gpd-per-hour-worked.csv')
+gdp1 <- gdp %>% select(REF_AREA,TIME_PERIOD, OBS_VALUE) 
+gdp1 <- gdp1 %>% setnames(old = c("REF_AREA", "TIME_PERIOD"), new = c("iso3c", "year"))
 
 ```
 
@@ -292,18 +286,14 @@ AdjCov
 + ud_fem 2 y ud_male2
 
 ```{r, warning= FALSE}
-url <- "https://aias.s3.eu-central-1.amazonaws.com/website/uploads/20191107_ICTWSS_6_1_Dataset.xlsx"
-GET(url, write_disk(tf <- tempfile(fileext = ".xlsx")))
-ictwss2 <- read_excel(tf, 1L, skip = 1)
-ictwss2$country[which(ictwss2$country == "United States of America")] <- "United States"
+ictwss <- read_csv('ictwss_2023.csv')
+ictwss$country[which(ictwss$country == "United States of America")] <- "United States"
 #agregar columna de UD
-ictwss <- read_excel("data/excel/ictwss.xlsx")
-ictwss <- select(ictwss, country, year, ud_fem2, ud_male2)
-ictwss3 <- merge(ictwss2, ictwss, by= c("country","year"), all = T)
-ictwss <- ictwss3; remove(ictwss3)
+names(ictwss)
+ictwss <- select(ictwss, country, year, UD_female, UD_male)
 ```
 
-# Merge
+# Merge #Pendiente!!!!!!!!
 ```{r}
 code <- read_excel("data/excel/iso-code.xlsx")
 code <- code %>% mutate(year = 1960)
