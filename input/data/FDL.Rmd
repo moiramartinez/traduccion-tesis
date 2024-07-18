@@ -98,14 +98,14 @@ Source: “Employment by activities and status (ALFS)” dataset is a subset of 
 
 Unit: Data are presented in percentage of total employees
 
-Coverage: PENDIENTE
+Coverage: 1955-2022
 
 ```{r, include = FALSE}
 
-alfs <- read_csv('employment_by_activities_and_')
+alfs <- read_csv('employment_by_activities_and_status.csv')
 
 alfs <- alfs %>%
-  mutate(SUBJECT = recode(sector,
+  mutate(SUBJECT = recode(SUBJECT,
     'YA994TL1_ST' = 'total_sector',
     'YA994AL1_ST' = 'sector_ag',
     'YA994IL1_ST' = 'sector_ind',
@@ -133,16 +133,17 @@ alfs <- alfs %>%
     'YA99U4L1_ST' = 'sectorU'
   ))
 
+alfs <- alfs %>% rename('sector' = 'SUBJECT')
 
 
+alfs1 <- alfs %>% select(LOCATION, SEX, TIME_PERIOD, OBS_VALUE, sector) %>% 
+  spread(key = "sector", value = "OBS_VALUE") 
 
-alfs1 <- alfs %>% select(LOCATION, SEX, obsTime, obsValue, sector) %>% 
-  spread(key = "sector", value = "obsValue") 
 alfs1<- pivot_wider(data = alfs1,
             names_from = SEX, 
             values_from = sector_ag:total_sector)
 
-alfs1<-setnames(alfs1, old = c("LOCATION", "obsTime"),
+alfs1<-setnames(alfs1, old = c("LOCATION", "TIME_PERIOD"),
                new = c("iso3c", "year"))
 ```
 
@@ -291,23 +292,24 @@ ictwss$country[which(ictwss$country == "United States of America")] <- "United S
 #agregar columna de UD
 names(ictwss)
 ictwss <- select(ictwss, country, year, UD_female, UD_male)
+
 ```
 
-# Merge #Pendiente!!!!!!!!
+# Merge
 ```{r}
-code <- read_excel("data/excel/iso-code.xlsx")
-code <- code %>% mutate(year = 1960)
+
+code <- read_excel("iso-code.xlsx")
+code <- code %>% mutate(year = 1956)
 code <- code %>%
-    complete(country, year = 1960:2018) %>% fill(iso2c,iso3c,code, .direction = "down") #cambiar cuando sea 2019
+    complete(country, year = 1956:2023) %>% fill(iso2c,iso3c,code, .direction = "down") #cambiar cuando sea 2019
     
-central <- merge(code, ictwss, by = c("iso2c", "year","country"), all.y = T)
+central <- merge(code, ictwss, by = c("year","country"), all.y = T)
 ```
 
 ```{r, echo= FALSE}
 db <- Reduce(function(x,y) merge(x = x, y = y, by = c("iso3c", "year"), all.x = T),list(central, gwg1, rmw1, lf1,sector1,time1, informal1, gdp1,alfs1))
-db %>% select(country, iso2c,iso3c, year,rmw, T_ULCEX) %>%  subset(country == "United Kingdom")
 ```
 
 ```{r save, echo = F}
-save(db, file = "database2.RData")
+save(db, file = "../../output/data/database.RData")
 ```
