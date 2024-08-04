@@ -48,8 +48,6 @@ db[, c("country", "ocde")]
 
 #3. Variables lag
 
-# UD es una variable, de dónde sale? 
-# La BBDD solo tiene UD_fem y UD_male
 
 db <- db %>%  group_by(country) %>%  
   mutate(growth_ud = UD - lag(UD),
@@ -59,11 +57,11 @@ db <- db %>%  group_by(country) %>%
          growth_udmale = ud_male2 - lag(ud_male2),
          growth_udmalepercent = growth_udmale/lag(ud_male2) * 100,
          growth_e = EPR_MW - lag(EPR_MW),
-         growth_epercent = growth_e/lag(EPR_MW) * 100,
-         growth_p = T_GDPHRS_V - lag(T_GDPHRS_V),
+         growth_epercent = growth_e/lag(EPR_MW) * 100, #Employment rate, minimun wage (?)
+         growth_p = T_GDPHRS_V - lag(T_GDPHRS_V), # PIB x hora x trabajador
          growth_ppercent = growth_p/lag(T_GDPHRS_V) * 100,
          growth_rmw = rmw - lag(rmw),
-         growth_rmwpercent = growth_rmw/lag(rmw) * 100)
+         growth_rmwpercent = growth_rmw/lag(rmw) * 100) #real
 
 # 4. Variables VoC
 # En base a Hall y Soskice (2001). Estados Bálticos (LMEs), Mediterraneos, Nórdicos, Centrales

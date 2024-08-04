@@ -287,14 +287,12 @@ AdjCov
 + ud_fem 2 y ud_male2
 
 ```{r, warning= FALSE}
-ictwss <- read_csv('ictwss_2023.csv')
+ictwss <- read.csv('ictwss_2023.csv')
 ictwss$country[which(ictwss$country == "United States of America")] <- "United States"
-#agregar columna de UD
 names(ictwss)
-ictwss <- select(ictwss, country, year, UD_female, UD_male)
+ictwss <- select(ictwss, country, year, UD, UD_female, UD_male)
 
 ```
-
 # Merge
 ```{r}
 
@@ -311,5 +309,5 @@ db <- Reduce(function(x,y) merge(x = x, y = y, by = c("iso3c", "year"), all.x = 
 ```
 
 ```{r save, echo = F}
-save(db, file = "../../output/data/database.RData")
+save(db, file = "database_FDL.RData")
 ```
