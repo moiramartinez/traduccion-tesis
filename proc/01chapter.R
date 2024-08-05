@@ -118,12 +118,15 @@ saveWidget(map2, file="figures/map1.html")
 #1. Manipular datos 
 #usar db
 
-db2 <- db %>% filter(!is.na(ud_fem2)) %>%
-  dplyr::select(year, country, UD, ud_fem2, ud_male2)
+library(tidyverse)
+library(ggplot2)
+
+db2 <- db %>% filter(!is.na(UD_female)) %>%
+  dplyr::select(year, country, UD, UD_female, UD_male)
 
 db2 <- db2 %>% gather(key = "sexud", value = "rate", -UD, -country, -year)
 
-db2  <- mutate(db2, sex = ifelse(sexud %in% c("ud_fem2"), "Female", "Male"))
+db2  <- mutate(db2, sex = ifelse(sexud %in% c("UD_female"), "Female", "Male"))
 
 db2  <- mutate(db2, femin = ifelse(country %in% c("Australia",
                                                   "Brazil",
@@ -172,7 +175,7 @@ figura1.1
 
 ggsave(
   plot = figura1.1,
-  filename = "../output/graphs/figura1.1.png",
+  filename = "output/graphs/figura1.1.png",
   device = "png",
   dpi = "retina",
   units = "cm",
@@ -201,7 +204,7 @@ figura1.2
 
 ggsave(
   plot = figura1.2,
-  filename = "../output/graphs/figura1.2.png",
+  filename = "output/graphs/figura1.2.png",
   device = "png",
   dpi = "retina",
   units = "cm",
