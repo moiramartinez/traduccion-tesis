@@ -284,13 +284,15 @@ Coord
 UD
 AdjCov
 
+
+
 + ud_fem 2 y ud_male2
 
 ```{r, warning= FALSE}
 ictwss <- read.csv('ictwss_2023.csv')
 ictwss$country[which(ictwss$country == "United States of America")] <- "United States"
 names(ictwss)
-ictwss <- select(ictwss, country, year, UD, UD_female, UD_male)
+ictwss <- select(ictwss, country, year, UD, UD_s_female, UD_s_male) #Administrativos o survey ?
 
 ```
 # Merge

@@ -14,6 +14,9 @@ pacman::p_load("tidyverse","dplyr","ggplot2",
 pacman::p_load("sf","raster","spData","spDataLarge","leaflet", 
                "htmlwidgets", "tmap", "mapview", "shiny", "maps")
 
+
+library(gganimate)
+
 remotes::install_github("ropensci/geojsonio")
 library()
 
@@ -26,16 +29,31 @@ load(file = "input/data/database_FDL.RData")
 
 # 4. Manipular base de datos
 
-db_1 <- db %>% dplyr::select(country, year,UD, UD_female, UD_male)
+library(tidyverse)
+
+db_1 <- db %>% dplyr::select(country, year,UD, UD_s_female, UD_s_male)
 
 ##### Mapa 1 ######
 #1. Manipulacion datos
 #Seleccionar último dato de sindicalización por país
 #Me di cuenta que tendré que imputar datos antes (paquete tidyr, funcion fill)
-db_2 <- db_1 %>% fill(UD) %>% filter(!is.na(UD_female))%>% 
+
+db_1$UD[db_1$UD == -88] <- NA
+db_1$UD_s_female[db_1$UD_s_female == -88] <- NA
+db_1$UD_s_male[db_1$UD_s_male == -88] <- NA
+
+db_1 <- db_1[!is.na(db_1$UD), ]
+
+
+db_2 <- db_1 %>% fill(UD) %>% filter(!is.na(UD_s_female))%>% 
   group_by(country) %>%
-  filter(year == max(year)) %>% mutate(fudi = UD_female / UD_male) %>% 
-  mutate_if(is.numeric, ~round(., 2))
+  filter(year == max(year)) %>% mutate(fudi = UD_s_female / UD_s_male)
+
+
+
+
+
+
 
 #2. Cargar mapa
 #Make a Spdb object (spatial polygon data frame).
@@ -121,14 +139,14 @@ saveWidget(map2, file="figures/map1.html")
 library(tidyverse)
 library(ggplot2)
 
-db2 <- db %>% filter(!is.na(UD_female)) %>%
-  dplyr::select(year, country, UD, UD_female, UD_male)
+db_2 <- db %>% filter(!is.na(UD_s_female)) %>%
+  dplyr::select(year, country, UD, UD_s_female, UD_s_male)
 
-db2 <- db2 %>% gather(key = "sexud", value = "rate", -UD, -country, -year)
+db_2 <- db_2 %>% gather(key = "sexud", value = "rate", -UD, -country, -year)
 
-db2  <- mutate(db2, sex = ifelse(sexud %in% c("UD_female"), "Female", "Male"))
+db_2  <- mutate(db_2, sex = ifelse(sexud %in% c("UD_s_female"), "Female", "Male"))
 
-db2  <- mutate(db2, femin = ifelse(country %in% c("Australia",
+db_2  <- mutate(db_2, femin = ifelse(country %in% c("Australia",
                                                   "Brazil",
                                                   "Canada",
                                                   "Chile",
@@ -156,10 +174,10 @@ db2  <- mutate(db2, femin = ifelse(country %in% c("Australia",
                                                   "United States",
                                                   "Uruguay"), 1, 0))
 
-db2$country <- gsub("Russian Federation", "Russia", db2$country)
+db_2$country <- gsub("Russian Federation", "Russia", db_2$country)
 
-feminizado <- db2 %>% filter(femin == 1)
-masculinizado <- db2 %>% filter(femin == 0)
+feminizado <- db_2 %>% filter(femin == 1)
+masculinizado <- db_2 %>% filter(femin == 0)
 
 # Figura 1.1
 figura1.1  <- ggplot(feminizado, aes( x= round(year, digits= 0), y = rate, group = sex, colour = sex)) + 
@@ -187,7 +205,7 @@ figura1.1gif <- figura1.1 + gganimate::transition_reveal(year)
 figura1.1gif
 
 #Guardar
-anim_save(plot = figura1.1gif, filename = "../output/graphs/gif1.1.gif", animation = last_animation(), path = NULL, width = 5000, height = 1000)
+anim_save(plot = figura1.1gif, filename = "output/graphs/gif1.1.gif", animation = last_animation(), path = NULL, width = 5000, height = 1000)
 
 
 # figura 1.2
