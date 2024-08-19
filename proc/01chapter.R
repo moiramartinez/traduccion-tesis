@@ -31,6 +31,7 @@ load(file = "input/data/database_FDL.RData")
 
 library(tidyverse)
 
+
 db_1 <- db %>% dplyr::select(country, year,UD, UD_s_female, UD_s_male)
 
 ##### Mapa 1 ######
@@ -49,7 +50,10 @@ db_2 <- db_1 %>% fill(UD) %>% filter(!is.na(UD_s_female))%>%
   group_by(country) %>%
   filter(year == max(year)) %>% mutate(fudi = UD_s_female / UD_s_male)
 
+tabla1 <- kable(db_2) %>%
+  kable_styling(latex_options = c("striped", "scale_down"))
 
+tabla2 <- kable(db_2)
 
 
 
