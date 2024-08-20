@@ -19,7 +19,7 @@ Sys.setlocale("LC_ALL", "ES_ES.UTF-8")
 
 ```{r paquetes, include=F, message=FALSE}
 pacman::p_load("tidyverse", "data.table", "readxl","httr", "codebook", 'magrittr', 
-               'readr')
+               'readr', 'openxlsx')
 ```
 
 # Wages
@@ -289,10 +289,9 @@ AdjCov
 + ud_fem 2 y ud_male2
 
 ```{r, warning= FALSE}
-ictwss <- read.csv('ictwss_2023.csv')
+ictwss <- openxlsx::read.xlsx('ICTWSS.xlsx',startRow = 2)
 ictwss$country[which(ictwss$country == "United States of America")] <- "United States"
-names(ictwss)
-ictwss <- select(ictwss, country, year, UD, UD_s_female, UD_s_male) #Administrativos o survey ?
+ictwss <- select(ictwss, country, year, UD, UD_fem, UD_male)
 
 ```
 # Merge
