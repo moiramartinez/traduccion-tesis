@@ -1,23 +1,21 @@
 # Chapter 1 --> Introducción
-#1. Cargar paquetes 
+#----1. Cargar paquetes ---- 
 
 library(tidyverse)
 library(rworldmap)
 library(sf)
 library(ggplot2)
 
-#2. Cargar bases de datos
+#---- 2. Cargar bases de datos ----
 load(file = "input/data/database_FDL.RData")
 
-# 3. Figuras 1.1 y Mapa
-# Gif y Mapa
+#---- 3. Figura 1.1 ----
+# Mapa
 
-# 4. Manipular base de datos
+# 1. Manipular base de datos
 
 db_1 <- db %>% dplyr::select(country, iso3c, year,UD, UD_fem, UD_male)
 
-##### Mapa 1 ######
-#1. Manipulacion datos
 #Seleccionar último dato de sindicalización por país
 
 db_1$UD_fem <- as.numeric(db_1$UD_fem)
@@ -58,8 +56,7 @@ map <- ggplot(data = world_sf) +
 ggsave('output/figures/figure1.1.jpg')
 
 
-############ figura 1 ###############
-#Gif 1 feminizadas y gif 2 masc
+#----4. Figura 1.2 ----
 
 #1. Manipular datos 
 #usar db
@@ -106,7 +103,7 @@ masculinizado <- db_3 %>% filter(femin == 0)
 
 feminizado$rate <- as.numeric(feminizado$rate)
 
-# Figura 1.2
+# 2. Figura
 figura1.2  <- ggplot(feminizado, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
   geom_line(linewidth = 1) +
   scale_colour_manual(name="Densidad sindical", breaks=c("Female", "Male"),
@@ -127,6 +124,9 @@ ggsave(
   width = 30,
   height = 20
 )
+
+
+#----5. Figura 1.3 ----
 
 
 masculinizado$rate <- as.numeric(masculinizado$rate)

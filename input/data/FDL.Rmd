@@ -306,8 +306,60 @@ central <- merge(code, ictwss, by = c("year","country"), all.y = T)
 ```
 
 ```{r, echo= FALSE}
-db <- Reduce(function(x,y) merge(x = x, y = y, by = c("iso3c", "year"), all.x = T),list(central, gwg1, rmw1, lf1,sector1,time1, informal1, gdp1,alfs1))
+db <- merge(central, gdp1, by = c('year', 'iso3c'), all.x = TRUE)
+
+db <- db %>% rename(GDP = OBS_VALUE)
+
+db <- merge(db, rmw1, by = c('year', 'iso3c'), all.x = T)
+
+db <- merge(db, lf1, by = c('year', 'iso3c'), all.x = T)
+
+db <- merge(db, sector1, by = c('year', 'iso3c'), all.x = T)
+
+db <- merge(db, time1, by = c('year', 'iso3c'), all.x = T)
+
+db <- merge(db, informal1, by = c('year', 'iso3c'), all.x = T)
+
+db <- merge(db, alfs1, by = c('year', 'iso3c'), all.x = T)
+
 ```
+
+# OCDE members
+
+```{r}
+
+ocde_countries <- c("AUS", "AUT", "BEL", "CAN", "CHL", "CZE", "DNK", "EST", "FIN", "FRA", "DEU", "GRC", 
+           "HUN", "ISL", "IRL", "ISR", "ITA", "JPN", "KOR", "LUX", "MEX", "NLD", "NZL", "NOR", 
+           "POL", "PRT", "SVK", "SVN", "ESP", "SWE", "CHE", "TUR", "GBR", "USA")
+
+db$OCDE <- ifelse(db$iso3c %in% ocde_countries, 1, 0)
+
+
+```
+
+# Continent
+
+```{r}
+db <- db %>%
+  mutate(continent = ifelse(country %in% c("Argentina", "Brazil", "Chile", "Colombia", "Costa Rica", "Mexico", "Uruguay"),"Latin America",
+                                       ifelse(country  %in% c("United States","Canada"),"North America",
+                                              ifelse(country %in% c("Austria", "Belgium","Bulgaria","Croatia",
+                                                                    "Cyprus", "Czech Republic", "Denmark",
+                                                                    "Estonia", "Finland", "France", "Germany",
+                                                                    "Greece","Hungary", "Ireland", "Italy",
+                                                                    "Latvia", "Lithuania", "Luxembourg","Malta",
+                                                                    "Netherlands", "Norway", "Poland","Portugal","Romania", "Slovak Republic",
+                                                                    "Slovenia", "Spain", "Sweden", "Switzerland",
+                                                                    "United Kingdom"), "Europe",
+                                                     ifelse(country %in% c("Australia", "Iceland","New Zealand"), "Oceania",
+                                                            ifelse(country %in% c("China", "Hong Kong, China",
+                                                                                  "India", "Israel", "Japan",
+                                                                                  "Korea, Republic of",
+                                                                                  "Malaysia", "Russian Federation",
+                                                                                  "Singapore", "Taiwan, China","Turkey", "Indonesia", "Philippines"), "Asia", "Africa"))))))
+```
+
+
 
 ```{r save, echo = F}
 save(db, file = "database_FDL.RData")

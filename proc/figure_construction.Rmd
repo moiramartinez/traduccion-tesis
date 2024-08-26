@@ -20,5 +20,5 @@ All the figures from this chapter were constructed using the *introduction_figur
 
 1. **Packages used:** tidyverse environment, rwoldmap, sf
 2. **Variables used:** country, iso3c, year,UD, UD_fem, UD_male
-3. Please refer to the **Figure 1.1** section of the *introduction_figures.R* code.
+3. Please refer to the **Figure 1.1** section of the *introduction_figures.R* file and run the code.
 
