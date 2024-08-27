@@ -92,13 +92,13 @@ fig2.6 <- wdi_dat %>% filter(country %in% c("World", "Latin America & Caribbean"
   gather(key = "sector", value = "percent", -country, -year, -iso3c, -iso2c, -region, -income) %>%  filter(!is.na(percent))
 
 fig2.6$country <- as.factor(fig2.6$country)
-levels(fig2.6$country) <- c("Asia del Este y Pacífico", "Europa y Asia Central","Latinoamérica", "África", "Norteamérica",  "Mundo")
+levels(fig2.6$country) <- c("East Asia and Pacific", "Europe and Central Asia", "Latin America", "Africa", "North America", "World")
 
 figure2.6<- ggplot(fig2.6, aes(x = year, y = percent)) + 
   geom_line(aes(color = sector), size = 1) + 
   scale_color_brewer(palette = "Dark2",name = "", labels =c("Agriculture", "Industry", "Services")) +
   theme(legend.position ="bottom") + facet_wrap(.~country, scales = "free")+ 
-  labs(y ="%", x ="", caption= "Source: Author's own elaboration based on World Bank (2020) using estimates from ILO (2019)")
+  labs(y ="%", x ="", caption= "Source: Author's own elaboration based on World Bank (2024) using estimates from ILO (2019)")
 
 ggsave(plot = figure2.6,
        filename = "output/figures/figure2.6.png",device = "png",
@@ -108,14 +108,6 @@ ggsave(plot = figure2.6,
 
 # Union density by sex and
 # Wage and salaried workers (employees) are those workers who hold the type of jobs defined as "paid employment jobs," where the incumbents hold explicit (written or oral) or implicit employment contracts that give them a basic remuneration that is not directly dependent upon the revenue of the unit for which they work.
-
-WDIsearch("part.time*", cache = new_wdi_cache)
-
-wdi_dat <- WDI(indicator = c("SL.EMP.WORK.FE.ZS", 
-                             "SL.EMP.WORK.MA.ZS", 
-                             "SL.TLF.PART.ZS", 
-                             "SL.TLF.PART.FE.ZS", 
-                             "SL.TLF.PART.MA.ZS"), start = 1960, end = 2019, extra = TRUE)
 
 
 fig2.7 <- db %>% select(year, LF_RATE__T, LF_RATE_F,LF_RATE_M, country) %>%   
@@ -136,7 +128,7 @@ figure2.7 <- fig2.7 %>% filter(!is.na(promedio_percent)) %>%
   geom_hline(aes(yintercept = 50), linetype = "dashed", color = "gray40")+
   scale_color_brewer(palette = "Dark2", name = "", labels = c("Total", "Women", "Men")) +
   theme(legend.position ="bottom") + 
-  labs(y ="%", x ="", caption= "Source: Author's own elaboration based on OECD (2020). Wage and salaried workers by sex")
+  labs(y ="%", x ="", caption= "Source: Author's own elaboration based on OECD (2024). Wage and salaried workers by sex")
 
 ggsave(plot = figure2.7,
        filename = "output/figures/figure2.7.png", device = "png",
@@ -145,7 +137,6 @@ ggsave(plot = figure2.7,
 
 # Figura 2.8 ----------------
 
-#labels = c( "Total","Hombres", "Mujeres")
 
 figure2.8 <- db %>% select(year, country, `Part-time__T`, `Part-time_F`, `Part-time_M`) %>%   
   group_by(year) %>% do(add_row(., year = unique(.$year),
@@ -160,7 +151,7 @@ figure2.8 <- db %>% select(year, country, `Part-time__T`, `Part-time_F`, `Part-t
   scale_y_continuous(labels = function(x) paste0(x, "%"), limits = c(0, 50))+
   scale_color_brewer(palette = "Dark2",name = "", labels = c( "Total","Women", "Men")) +
   theme(legend.position ="bottom") + 
-  labs(y ="Part-time Employment", x ="", caption= "Source: Author's own elaboration based on OECD (2020).. Wage and salaried workers by sex")
+  labs(y ="Part-time Employment", x ="", caption= "Source: Author's own elaboration based on OECD (2024). Wage and salaried workers by sex")
 
 ggsave(plot = figure2.8,
        filename = "output/figures/figure2.8.png",device = "png",

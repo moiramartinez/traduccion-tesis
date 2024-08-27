@@ -50,7 +50,7 @@ map <- ggplot(data = world_sf) +
     legend.position = "right",  # Posicionar la leyenda en el costado derecho
     plot.title = element_text(hjust = 0.5)  # Centrando el título
   ) +
-  labs(title = "FUDI por País")
+  labs(title = "FUDI per Country")
 
 #Guardar
 ggsave('output/figures/figure1.1.jpg')
@@ -106,10 +106,10 @@ feminizado$rate <- as.numeric(feminizado$rate)
 # 2. Figura
 figura1.2  <- ggplot(feminizado, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
   geom_line(linewidth = 1) +
-  scale_colour_manual(name="Densidad sindical", breaks=c("Female", "Male"),
-                      labels=c("Femenina", "Masculina"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+  scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
+                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
-  labs(x = "Año", y = "Densidad sindical") + 
+  labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
   theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5))
 
@@ -134,10 +134,10 @@ masculinizado$rate <- as.numeric(masculinizado$rate)
 # figura 1.3
 figura1.3  <- ggplot(masculinizado, aes( x= round(year, digits= 0), y = rate, group = sex, colour = sex)) + 
   geom_line(size = 1) +
-  scale_colour_manual(name="Densidad sindical", breaks=c("Female", "Male"),
-                      labels=c("Femenina", "Masculina"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+  scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
+                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
-  labs(x = "Año", y = "Densidad sindical") + 
+  labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
   theme(legend.justification=c(1,0), legend.position=c(1,0), axis.text.x = element_text(size = 5))
 
