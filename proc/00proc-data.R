@@ -52,16 +52,6 @@ db <- db %>%
                                                          "Netherlands", "Norway",  "Sweden", "Switzerland", "Slovenia", "Luxembourg", "Czech Republic"), "CMEs",
                                                  ifelse(country %in% c("France", "Italy", "Spain","Portugal","Greece","Turkey"), "Ambiguos", "No-Se")))))
 
-## Imputar ----------
-# 6. Imputar datos
-ud_country <- read_excel("../input/data/excel/ud-country.xlsx", 
-                         sheet = "USA", skip=1)
-
-db <- db %>% left_join(ud_country, by = c("country", "year"), all.x = T) %>% 
-  mutate(UD = if_else(is.na(UD), ratio...12, UD)) %>% dplyr::select(iso3c:growth_rmwpercent)
-
-remove(ud_country)
-
 # NA in isoc3
 db <- db %>% mutate(iso3c = if_else(is.na(iso3c)&country=="Uruguay", "URY",
                               if_else(is.na(iso3c)&country=="Slovak Republic", "SVK",

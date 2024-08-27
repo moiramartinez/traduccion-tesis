@@ -35,6 +35,7 @@ Unit: US$ PurchasingPower Parities (PPPs)
 Coverage: 1970-2022
 
 ```{r, include=FALSE}
+
 rmw <- read_csv('real_minimun_wage.csv')
 rmw1 <- rmw %>% select(REF_AREA, TIME_PERIOD, OBS_VALUE) 
 
@@ -248,7 +249,9 @@ Definition: GDP per hour worked is a measure of labour productivity. It measures
 
 Source: The default direct source for total hours worked is generally the OECD Annual National Accounts (ANA) Database. However, for a number of countries, long time series of hours worked are not available. For these countries, estimates from the OECD Employment Outlook are used. These are based on annual Labour Force Surveys (LFS) supplemented with information from a detailed OECD survey sent to member countries.
 
-Unit: Average Annual rate of growth. Base year 2010
+Unit: Average Annual rate of growth. 
+
+Base year 2010
 
 ```{r, echo= F}
 gdp <- read_csv('gpd-per-hour-worked.csv')
@@ -270,13 +273,6 @@ Definition: This data looks at how many men and women are in paid work (who work
 Time spent in unpaid work includes: routine housework; shopping; care for household members; child care; adult care; care for non-household members; volunteering; travel related to household activities; other unpaid activities.
 
 Source: [National Time Uses Surveys](https://www.oecd.org/gender/data/time-spent-in-unpaid-paid-and-total-work-by-sex.htm) data set in [OCDE](https://www.oecd.org/gender/data/OECD_1564_TUSupdatePortal.xls)
-
-
-```{r, echo = FALSE}
-# gender <- OECD::get_dataset("GENDER_EMPR", 
-#                             filter = "AUS",
-#                   pre_formatted = T)
-```
 
 ## ICTWSS
 
@@ -306,21 +302,21 @@ central <- merge(code, ictwss, by = c("year","country"), all.y = T)
 ```
 
 ```{r, echo= FALSE}
-db <- merge(central, gdp1, by = c('year', 'iso3c'), all.x = TRUE)
+db <- merge(central, gdp1, by = c('year', 'iso3c'), all.x = TRUE, all.y = TRUE)
 
 db <- db %>% rename(GDP = OBS_VALUE)
 
-db <- merge(db, rmw1, by = c('year', 'iso3c'), all.x = T)
+db <- merge(db, rmw1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
 
-db <- merge(db, lf1, by = c('year', 'iso3c'), all.x = T)
+db <- merge(db, lf1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
 
-db <- merge(db, sector1, by = c('year', 'iso3c'), all.x = T)
+db <- merge(db, sector1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
 
-db <- merge(db, time1, by = c('year', 'iso3c'), all.x = T)
+db <- merge(db, time1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
 
-db <- merge(db, informal1, by = c('year', 'iso3c'), all.x = T)
+db <- merge(db, informal1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
 
-db <- merge(db, alfs1, by = c('year', 'iso3c'), all.x = T)
+db <- merge(db, alfs1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
 
 ```
 

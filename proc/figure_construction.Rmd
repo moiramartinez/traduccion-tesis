@@ -8,11 +8,147 @@ date: "2024-08-20"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Data construction
+# **The feminization of labor conflict: A temporal and comparative analysis of global union density** Replication Manual 
 
-To replicate the data used in this study, please refer to the archive named *database_construction.Rmd*, located in the processing folder.
+## 1. Data
 
-## Introduction
+The data used in this research come from the construction of a longitudinal database (FDL) on labor relations based on the union of sources such as ICTWSS, OECD, ILO, and World Bank, which provide temporal information at the country level. To this is added the estimation and validation of the two main indicators for this study, which are female and male union density, which were constructed from household surveys, labor force surveys, and/or administrative data for the countries under study (see Appendix A). FDL is a longitudinal database that contains 3,360 observations and 340 labor, economic, and institutional variables based on information from 1960 to 2023 from 45 countries around the world.
+
+The data used in the manuscript can be replicated following the steps below. All files were processed in R language (.R) using RStudio. 
+
+### 1.1 Data folder
+
+The data folder contains the following .csv and .xlsx archives: 
+
+#### 1.1.1 employment_by_activities_and_status.csv
+
+**Economic activities** are defined according to the Major divisions of the International standard International Classification (ISIC). Data are presented according to the latest revisions of the ISIC: Revision 3 (1990) and Revision 4 with the exception of the United States for which data is only available in Revision 2 until 2002 only.
+
+In some cases, the data according to both revisions are updated while only the latest is revised in other cases. This explains why in some cases, the level of employment or the number of employees are different according to the two ISIC revisions. Unless otherwise specified in the country notes data are compiled from the Labour Force Surveys.
+
+**Source:** “Employment by activities and status (ALFS)” dataset is a subset of the Annual Labour Force Statistics (ALFS) database which contains annual labour force statistics for the 36 OECD member countries plus Colombia, Costa Rica, Brazil and Russian Federation.
+
+**Unit:** Data are presented in percentage of total employees
+
+**Coverage:** 1955-2022
+
+#### 1.1.2 employment_distribution_economic_activity_sex.csv
+
+Employment distribution by economic activity (by sex) 
+
+**Source:** ILO modeled statistics (2019)
+
+#### 1.1.3 gender_wage_gap.csv
+
+**Definition:** The gender wage gap is defined as the difference between median earnings of men and women relative to median earnings of men. Data refer to full-time employees on the one hand and to self-employed on the other.
+
+**Source:** [OCDE](https://data.oecd.org/earnwage/gender-wage-gap.html)
+
+**Unit:** Data are presented in percentage of total employees
+
+**Coverage:** 1970-2023
+
+#### 1.1.4 gender_share_part_time.csv !!!
+
+#### 1.1.5 gdp_per_hour_worked.csv
+
+**Definition:** GDP per hour worked is a measure of labour productivity. It measures how efficiently labour input is combined with other factors of production and used in the production process. Labour input is defined as total hours worked of all persons engaged in production. Labour productivity only partially reflects the productivity of labour in terms of the personal capacities of workers or the intensity of their effort. The ratio between the output measure and the labour input depends to a large degree on the presence and/or use of other inputs (e.g. capital, intermediate inputs, technical, organisational and efficiency change, economies of scale). This indicator is measured in USD (constant prices 2010 and PPPs) and indices.
+
+**Source:** The default direct source for total hours worked is generally the OECD Annual National Accounts (ANA) Database. However, for a number of countries, long time series of hours worked are not available. For these countries, estimates from the OECD Employment Outlook are used. These are based on annual Labour Force Surveys (LFS) supplemented with information from a detailed OECD survey sent to member countries.
+
+**Unit:** Average Annual rate of growth. 
+
+**Coverage**: 1970-2023
+
+#### 1.1.6 ICTWSS.xlsx !!!
+
+**Coverage**: -2019
+
+#### 1.1.7 incidence_full_time_part_time.csv
+
+**Definition**: incidence and share consider only dependent workers. Limits of part time and full time emplyment are based on national definitions. 
+
+**Source:** [Labor Force Survey](http://www.oecd.org/els/emp/LFS%20Definitions%20-%20Tables.pdf) for each country.
+
+**Unit:** Data are presented in percentage of total employees
+
+**Coverage**: !!!
+
+#### 1.1.8 informal_employment.csv
+
+**Definition:** Informal employment comprises persons who in their main jobs were unincorporated enterprises that produce at least partly for the market and are not registered. It excludes households that produce exclusively for own final use, subsistence agriculture, construction of own dwellings, etc. Some characteristics[^1] of informal imployment are: 
+  - Lack of coverage by social security system;
+  - Lack of entitlement to paid annual or sick leave;
+  - Lack of written employment contract.
+    
+[^1]: For a more complete definition see [ILO](https://ilostat.ilo.org/resources/methods/description-informality/)
+
+**Source:** ILOSTAT,International Labour Organization. 
+
+The harmonized series on informality are derived by the Department of Statistics from processing national household survey microdata files using a consistent navigational path. The process involves identifying the production unit (formal sector, informal sector or household) and the nature of the job (formal job or informal job) of each employed person in their main job in order to derive the final indicators.
+
+**Unit:** Data are presented in percentage of total employees
+
+**Coverage**: 
+
+#### 1.1.9 iso_code.xlsx
+
+Contains the iso3c codes for all the countries considered in the database.
+
+#### 1.1.10 labor_force_statistics.csv
+
+**Definition**:  This dataset contains data on labour force participation rates, employment/population ratios and unemployment rates for both the total labour force and civilian labour force by sex. [LFS Definitions](http://www.oecd.org/els/emp/LFS%20Definitions%20-%20Tables.pdf)
+
+**Source**: Labor Force Statistics dataset (OECD)
+
+**Unit:** Data are presented in percentage of total employees
+
+**Coverage:** 1966 - 2023
+
+#### 1.1.11 real_minimun_wage.csv
+
+**Definition**: Real hourly and annual minimum wages are statutory minimum wages converted into a common hourly and annual pay period for the 28 OECD countries and 4 non-member countries for which they are available. The resulting estimates are deflated by national Consumer Price Indices (CPI). The data are then converted into a common currency unit using US$ Purchasing Power Parities (PPPs) for private consumption expenditures.
+
+Real hourly and annual minimum wages are calculated first by deflating the series using the consumer price index taking 2018 as the base year.  The series are then converted into a common currency unit (USD) using Purchasing Power Parities (PPPs) for private consumption expenditures in 2018.
+
+**Unit:** US$ PurchasingPower Parities (PPPs)
+
+**Source**: OECD
+
+**Coverage:** 1970-2022
+
+#### 1.1.12 time_spent_paid_unpaid_work.csv !!!!
+
+### 1.2 Data construction
+
+The archive *data-construction.R* contains the steps followed to create the database, which are:
+
+1. Installing and opening the packages necessary to create the database. In this case: *tidyverse*, *data.table*, *openxlsx*, *magrittr* and *httr*.
+
+2. Reading each dataset. 
+
+3. Selecting the variables of interest in each dataset.
+
+4. Selecting the year and country variables in each dataset.
+
+5. Rename the variables in each dataset.
+
+6. Tranforming the dataset from long format to wide format (if necessary).
+
+7. Merging all the datasets.
+
+8. Creating the *OCDE* column (assigns the code '1' to all the countries that are part of the organization)
+
+9. Creating the *Continent* column (classifies each row depending on the observation's country)
+
+10. Creating the ** column (blablabla) !!!
+
+11. Saving the final database in .RData format.
+
+
+# 2. Figures and tables
+
+## 2.1 Introduction
 
 All the figures from this chapter were constructed using the *introduction_figures.R* file, located in the processing folder. 
 

@@ -137,16 +137,17 @@ ggsave(plot = figure2.7,
 
 # Figura 2.8 ----------------
 
+fig2.8 <- db %>% select(year, country, `Part-time__T`, `Part-time_F`, `Part-time_M`) %>% 
+  gather(key = "pt", value = "percent", -year, -country)
 
-figure2.8 <- db %>% select(year, country, `Part-time__T`, `Part-time_F`, `Part-time_M`) %>%   
-  group_by(year) %>% do(add_row(., year = unique(.$year),
-                                `Part-time__T` = mean(.$`Part-time__T`, na.rm = T),
-                                `Part-time_M` = mean(.$`Part-time_M`, na.rm = T),
-                                `Part-time_F` = mean(.$`Part-time_F`, na.rm = T))) %>% 
-  filter(is.na(country)) %>%
-  gather(key = "pt", value = "percent", -year, -country) %>%
-  filter(!is.na(percent)) %>% 
-  ggplot(aes(x = year, y = percent)) + 
+fig2.8 <- fig2.8 %>%
+  group_by(year, pt) %>%
+  summarize(promedio_percent = mean(percent, na.rm = TRUE))
+
+
+figure2.8 <- fig2.8 %>%
+  filter(!is.na(promedio_percent)) %>% 
+  ggplot(aes(x = year, y = promedio_percent)) + 
   geom_line(aes(color = pt), size = 1) + 
   scale_y_continuous(labels = function(x) paste0(x, "%"), limits = c(0, 50))+
   scale_color_brewer(palette = "Dark2",name = "", labels = c( "Total","Women", "Men")) +
