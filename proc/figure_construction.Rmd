@@ -156,5 +156,71 @@ All the figures from this chapter were constructed using the *introduction_figur
 
 1. **Packages used:** tidyverse environment, rwoldmap, sf
 2. **Variables used:** country, iso3c, year,UD, UD_fem, UD_male
-3. Please refer to the **Figure 1.1** section of the *introduction_figures.R* file and run the code.
+3. Create a world map, using the latest valid union density by gender (FUDI) data by country.
+4. Blue shades indicate masculine union density, purple shades indicate femenine union density, white indicates neutral or NA values.
+
+### *Figure 1.2*
+
+1. **Packages used:** tidyverse environment, ggplot2
+2. **Variables used:** !!!!!!!!!!
+3. Create a line chart for countries with feminine union density. The figure is a grid, with one figure for each country. The x-axis represents the years, and the y-axis represents the Union Density rates. The data is grouped and colored by gender, with "Femenine" (female) shown in magenta and "Masculine" (male) shown in a shade of blue.
+
+### *Figure 1.3*
+
+1. **Packages used:** tidyverse environment, ggplot2
+2. **Variables used:** !!!!!!!!!!
+3. Create a line chart for countries with masculine union density. The figure is a grid, with one figure for each country. The x-axis represents the years, and the y-axis represents the Union Density rates. The data is grouped and colored by gender, with "Femenine" (female) shown in magenta and "Masculine" (male) shown in a shade of blue.
+
+## 2.2 Chapter 1
+
+### *Figure 2.1*
+
+1. **Packages used:** tidyverse environment, ggplot2
+2. **Variables used:** OCDE, country, year, UD
+3. Create a bar chart that displays Union Density (UD) for different countries that are part of the OECD. The x-axis represents the countries, and the y-axis represents the Union Density rates. There is a dashed horizontal line which represents the mean Union Density. 
+
+
+### *Figure 2.2*
+
+1. **Packages used:** tidyverse environment, ggplot2
+2. **Variables used:** OCDE, country, year, UD
+3. Create a line chart  that shows Union Density (UD) over the years for various countries, excluding those in Africa. The x-axis represents the years, while the y-axis represents the Union Density rates. Each line represents a different country, and they are colored differently to distinguish between them. The grid is divided into multiple panels, each representing a different continent.
+
+### *Figure 2.3*
+
+1. **Packages used:** tidyverse environment, ggplot2
+2. **Variables used:** country, year, region, income, ser_empl, ind_empl, agr_emp
+3. Create a line chart that displays the percentage of employment in three sectors (Agriculture, Industry, and Services) over the years for various regions.X-Axis represents the years, Y-Axis represents the percentage of employment in each sector.Different colors are used to represent each sector (Agriculture, Industry, Services).
+
+### *Figure 2.4*
+
+1. **Packages used:** tidyverse environment, ggplot2
+2. **Variables used:** country, year, LF_RATE__T, LF_RATE_F,LF_RATE_M
+3. Create a line chart that displays the average percentage of wage and salaried workers over the years for different labor force categories. X-Axis represents the years and Y-Axis represents the average percentage of wage and salaried workers. Different colors are used to represent each labor force category (Total, Women, Men).
+
+### *Figure 2.5*
+
+1. **Packages used:** tidyverse environment, ggplot2
+2. **Variables used:** year, country, Part-time__T, Part-time_F, Part-time_M
+3. Create a line chart that displays the average percentage of part-time employment over the years for different labor force categories. X-Axis represents the years and Y-Axis represents the average percentage of part-time employment. Different colors are used to represent each labor force category (Total, Women, Men). 
+
+### *Figure 2.6*
+
+1. **Packages used:** tidyverse environment, ggplot2
+2. **Variables used:** year, country, rmw, UD
+3. Create a scatter plot that displays Union Density (UD) against US Purchasing Power Parities (PPPs) for various countries. X-Axis Represents US Purchasing Power Parities (PPPs) in USD. Y-Axis represents Union Density (UD).Each point represents a country, the size of the points is proportional to the Union Density values.
+
+### *Table 2.1*
+
+1. **Packages used:** tidyverse environment, kable, kableExtra
+2. **Variables used:** year, country, growth_ud
+3. Create a table that presents data on Union Density across different decades for various countries. The table includes the following columns:
+
+* *Country:* The names of the countries.
+* *60-70:* Union Density data for the 1960s to 1970s.
+* *80-90:* Union Density data for the 1980s to 1990s.
+* *2000-:* Union Density data from the 2000s onwards.
+
+
+
 

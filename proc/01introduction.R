@@ -25,7 +25,6 @@ db_2 <- db_1 %>% fill(UD) %>% filter(!is.na(UD_fem))%>%
   group_by(country) %>%
   filter(year == max(year)) %>% mutate(fudi = UD_fem / UD_male)
 
-
 #2. Cargar mapa
 
 world_map <- joinCountryData2Map(db_2, joinCode = "ISO3", nameJoinColumn = "iso3c")
