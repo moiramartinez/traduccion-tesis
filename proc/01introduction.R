@@ -4,7 +4,6 @@
 library(tidyverse)
 library(rworldmap)
 library(sf)
-library(ggplot2)
 library(openxlsx)
 
 #---- 2. Cargar bases de datos ----
@@ -12,6 +11,30 @@ library(openxlsx)
 
 
 ictwss <- openxlsx::read.xlsx('input/data/ictwss_og.xlsx')
+
+ictwss  <- ictwss  %>%
+  group_by(country) %>%
+  mutate(valid_years = ifelse(!is.na(UD_fem) & UD_fem != "", year, NA)) 
+
+ictwss <- ictwss %>% filter(!is.na(UD_fem))
+
+ictwss <- ictwss %>% filter(UD_fem != " ")
+
+ictwss_2 <- ictwss %>%  
+  summarise(min_year = min(valid_years, na.rm = TRUE), keep_all = TRUE) 
+
+ictwss_2  <- ictwss_2  %>%
+  mutate(coverage = ifelse(substr(as.character(min_year), 1, 2) == "19", 1,
+                           ifelse(substr(as.character(min_year), 1, 2) == "20", 0, NA))) %>%
+  select(country, coverage)
+
+ictwss <- full_join(ictwss, ictwss_2, by = 'country')
+
+ictwss <- ictwss %>% select(-coverage.x, -valid_years)
+
+ictwss <- ictwss %>% rename(coverage = coverage.y)
+
+openxlsx::write.xlsx(ictwss, 'input/data/UD_data.xlsx')
 
 
 
