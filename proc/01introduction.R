@@ -10,7 +10,7 @@ library(openxlsx)
 #load(file = "input/data/database_FDL.RData")
 
 
-ictwss <- openxlsx::read.xlsx('input/data/ictwss_og.xlsx')
+ictwss <- openxlsx::read.xlsx('input/data/UD_data.xlsx')
 
 ictwss  <- ictwss  %>%
   group_by(country) %>%
@@ -39,7 +39,6 @@ openxlsx::write.xlsx(ictwss, 'input/data/UD_data.xlsx')
 
 
 ictwss$country[which(ictwss$country == "United States of America")] <- "United States"
-ictwss <- select(ictwss, country, year, UD, UD_fem, UD_male)
 
 
 code <- read.xlsx("input/data/iso-code.xlsx")
@@ -49,7 +48,9 @@ code <- code %>%
 
 db <- merge(code, ictwss, by = c("year","country"), all.y = T)
 
+db <- db %>% select(-iso2c.y)
 
+db <- db %>% select(-country_code)
 
 #---- 3. Figura 1.1 ----
 # Mapa
@@ -119,24 +120,23 @@ db_3 <- db %>%
   mutate(UD_fem = na_if(UD_fem, " "))
 
 
-db_3 <- db_3 %>% filter(!is.na(UD_fem)) %>%
-  dplyr::select(year, country, UD, UD_fem, UD_male)
-
 db_3$UD_fem <- as.numeric(db_3$UD_fem)
 db_3$UD_male <- as.numeric(db_3$UD_male)
 
+db_3 <- db_3 %>% select(year, country, UD, UD_fem, UD_male, coverage)
 
 db_3 %>%
   group_by(country) %>%
   filter(year == max(year)) %>%
   mutate(femin = ifelse(UD_fem > UD_male, 1, 0)) %>% 
-  filter(femin == 1)
+  filter(femin == 1) %>% 
+  print(n = 30)
 
-db_3 <- db_3 %>% gather(key = "sexud", value = "rate", -UD, -country, -year)
+db_3 <- db_3 %>% gather(key = "sexud", value = "rate", -UD, -country, -year, -coverage)
 
 db_3  <- mutate(db_3, sex = ifelse(sexud %in% c("UD_fem"), "Female", "Male"))
 
-db_3  <- mutate(db_3, femin = ifelse(country %in% c("Romania", "Israel", "Slovenia", "Finland", "Russian Federation", "Poland", "Estonia", "Hungary", "Latvia", "Lithuania", "Malaysia", "Croatia", "Denmark", "Ireland", "Mexico", "Canada", "Norway", "Australia", "United Kingdom"), 1, 0))
+db_3  <- mutate(db_3, femin = ifelse(country %in% c("Romania", "Israel", "Slovenia", "Finland", "Russian Federation", "Czech Republic", "Norway", "Poland", "Estonia", "Hungary", "Latvia", "Lithuania", "Malaysia", "Sweden", "Australia", "Croatia", "Denmark", "Iceland", "Ireland", "Mexico", "New Zealand", "Canada", "United Kingdom", "Chile"), 1, 0))
 
 db_3$country <- gsub("Russian Federation", "Russia", db_3$country)
 
@@ -155,13 +155,13 @@ figura1.2  <- ggplot(feminizado, aes(x= round(year, digits= 0), y = round(rate, 
   facet_wrap(~country, scales = "free") + 
   theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
-  scale_x_continuous(breaks = seq(1980, 2018, by = 5), limits = c(1980, 2018))
+  scale_x_continuous(breaks = seq(1980, 2020, by = 10), limits = c(1980, 2020),expand = c(0.05, 0.05))
 
 figura1.2
 
 ggsave(
   plot = figura1.2,
-  filename = "output/figures/figura1.2_ejeylibre.png",
+  filename = "output/figures/figura1.2.png",
   device = "png",
   dpi = "retina",
   units = "cm",
@@ -169,7 +169,14 @@ ggsave(
   height = 20
 )
 
-figura1.2_b  <- ggplot(feminizado, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
+
+feminizado_2obs <- feminizado %>%
+  group_by(country) %>%
+  filter(n() >= 4) %>%
+  ungroup()
+
+
+figura1.2.2  <- ggplot(feminizado_2obs, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
   geom_line(linewidth = 1) +
   scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
                       labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
@@ -178,14 +185,93 @@ figura1.2_b  <- ggplot(feminizado, aes(x= round(year, digits= 0), y = round(rate
   facet_wrap(~country, scales = "free") + 
   theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
-  scale_x_continuous(breaks = seq(1980, 2018, by = 5), limits = c(1980, 2018)) +
-  scale_y_continuous(breaks = seq(0, 98, by = 10), limits = c(0, 98))
+  scale_x_continuous(breaks = seq(1980, 2020, by = 10), limits = c(1980, 2020),expand = c(0.05, 0.05))
 
-figura1.2_b
+figura1.2.2
 
 ggsave(
-  plot = figura1.2_b,
-  filename = "output/figures/figura1.2_ejeyfijo.png",
+  plot = figura1.2.2,
+  filename = "output/figures/figura1.2_2obs.png",
+  device = "png",
+  dpi = "retina",
+  units = "cm",
+  width = 30,
+  height = 20
+)
+
+feminizado_4obs <- feminizado %>%
+  group_by(country) %>%
+  filter(n() >= 8) %>%
+  ungroup()
+
+figura1.2.3  <- ggplot(feminizado_4obs, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
+  geom_line(linewidth = 1) +
+  scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
+                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+  theme_classic()+
+  labs(x = "Year", y = "Union Density") + 
+  facet_wrap(~country, scales = "free") + 
+  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  geom_point(size = 1) + 
+  scale_x_continuous(breaks = seq(1980, 2020, by = 10), limits = c(1980, 2020),expand = c(0.05, 0.05))
+
+figura1.2.3
+
+ggsave(
+  plot = figura1.2.3,
+  filename = "output/figures/figura1.2_4obs.png",
+  device = "png",
+  dpi = "retina",
+  units = "cm",
+  width = 30,
+  height = 20
+)
+
+feminizado_2000 <- feminizado %>% filter(coverage == 0)
+
+feminizado_2000 <- feminizado_2000 %>% filter(country != 'Romania')
+
+figura1.2.4  <- ggplot(feminizado_2000, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
+  geom_line(linewidth = 1) +
+  scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
+                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+  theme_classic()+
+  labs(x = "Year", y = "Union Density") + 
+  facet_wrap(~country, scales = "free") + 
+  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  geom_point(size = 1) + 
+  scale_x_continuous(breaks = seq(2000, 2020, by = 5), limits = c(2000, 2020),expand = c(0.05, 0.05))
+
+figura1.2.4
+
+ggsave(
+  plot = figura1.2.4,
+  filename = "output/figures/figura1.2_2000.png",
+  device = "png",
+  dpi = "retina",
+  units = "cm",
+  width = 30,
+  height = 20
+)
+
+feminizado_1980 <- feminizado %>% filter(coverage == 1)
+
+figura1.2.5  <- ggplot(feminizado_1980, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
+  geom_line(linewidth = 1) +
+  scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
+                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+  theme_classic()+
+  labs(x = "Year", y = "Union Density") + 
+  facet_wrap(~country, scales = "free") + 
+  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  geom_point(size = 1) + 
+  scale_x_continuous(breaks = seq(1980, 2020, by = 5), limits = c(1980, 2020),expand = c(0.05, 0.05))
+
+figura1.2.5
+
+ggsave(
+  plot = figura1.2.5,
+  filename = "output/figures/figura1.2_1980.png",
   device = "png",
   dpi = "retina",
   units = "cm",
@@ -195,10 +281,13 @@ ggsave(
 
 
 
+
 #----5. Figura 1.3 ----
 
 
 masculinizado$rate <- as.numeric(masculinizado$rate)
+
+masculinizado <- masculinizado %>% filter(country != 'India')
 
 # figura 1.3
 figura1.3  <- ggplot(masculinizado, aes( x= round(year, digits= 0), y = rate, group = sex, colour = sex)) + 
@@ -210,13 +299,13 @@ figura1.3  <- ggplot(masculinizado, aes( x= round(year, digits= 0), y = rate, gr
   facet_wrap(~country, scales = "free") + 
   theme(legend.position = "bottom", axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
-  scale_x_continuous(breaks = seq(1980, 2018, by = 5), limits = c(1980, 2018))
+  scale_x_continuous(breaks = seq(1980, 2020, by = 10), limits = c(1980, 2020))
 
 figura1.3
 
 ggsave(
   plot = figura1.3,
-  filename = "output/figures/figura1.3_ejeylibre.png",
+  filename = "output/figures/figura1.3.png",
   device = "png",
   dpi = "retina",
   units = "cm",
@@ -224,23 +313,35 @@ ggsave(
   height = 20
 )
 
-figura1.3_b  <- ggplot(masculinizado, aes( x= round(year, digits= 0), y = rate, group = sex, colour = sex)) + 
-  geom_line(size = 1) +
+masculinizado_2obs <- masculinizado %>%
+  group_by(country) %>%
+  filter(n() >= 4) %>%
+  ungroup()
+
+masculinizado_2obs <- masculinizado_2obs %>% filter(country != 'Uruguay')
+
+masculinizado_2obs <- masculinizado_2obs %>% filter(country != 'India')
+
+masculinizado_2obs <- masculinizado_2obs %>% filter(country != 'Philippines')
+
+
+
+figura1.3.2  <- ggplot(masculinizado_2obs, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
+  geom_line(linewidth = 1) +
   scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
                       labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
   labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
-  theme(legend.position = "bottom", axis.text.x = element_text(size = 5)) +
+  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
-  scale_x_continuous(breaks = seq(1980, 2018, by = 5), limits = c(1980, 2018)) +
-  scale_y_continuous(breaks = seq(0, 98, by = 10), limits = c(0, 98))
+  scale_x_continuous(breaks = seq(1980, 2020, by = 10), limits = c(1980, 2020),expand = c(0.05, 0.05))
 
-figura1.3_b
+figura1.3.2
 
 ggsave(
-  plot = figura1.3_b,
-  filename = "output/figures/figura1.3_ejeyfijo.png",
+  plot = figura1.3.2,
+  filename = "output/figures/figura1.3_2obs.png",
   device = "png",
   dpi = "retina",
   units = "cm",
@@ -248,5 +349,91 @@ ggsave(
   height = 20
 )
 
-saveRDS(db, file = 'ud_database.rds')
+masculinizado_4obs <- masculinizado %>%
+  group_by(country) %>%
+  filter(n() >= 8) %>%
+  ungroup()
+
+
+masculinizado_4obs <- masculinizado_4obs %>% filter(country != 'India')
+
+
+figura1.3.3  <- ggplot(masculinizado_4obs, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
+  geom_line(linewidth = 1) +
+  scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
+                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+  theme_classic()+
+  labs(x = "Year", y = "Union Density") + 
+  facet_wrap(~country, scales = "free") + 
+  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  geom_point(size = 1) + 
+  scale_x_continuous(breaks = seq(1980, 2020, by = 10), limits = c(1980, 2020),expand = c(0.05, 0.05))
+
+figura1.3.3
+
+ggsave(
+  plot = figura1.3.3,
+  filename = "output/figures/figura1.3_4obs.png",
+  device = "png",
+  dpi = "retina",
+  units = "cm",
+  width = 30,
+  height = 20
+)
+
+masculinizado_2000 <- masculinizado %>% filter(coverage == 0)
+
+masculinizado_2000 <- masculinizado_2000 %>% filter(country != 'Philippines')
+
+
+figura1.3.4  <- ggplot(masculinizado_2000, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
+  geom_line(linewidth = 1) +
+  scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
+                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+  theme_classic()+
+  labs(x = "Year", y = "Union Density") + 
+  facet_wrap(~country, scales = "free") + 
+  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  geom_point(size = 1) + 
+  scale_x_continuous(breaks = seq(2000, 2020, by = 5), limits = c(2000, 2020),expand = c(0.05, 0.05))
+
+figura1.3.4
+
+ggsave(
+  plot = figura1.3.4,
+  filename = "output/figures/figura1.3_2000.png",
+  device = "png",
+  dpi = "retina",
+  units = "cm",
+  width = 30,
+  height = 20
+)
+
+masculinizado_1980 <- masculinizado %>% filter(coverage == 1)
+
+
+figura1.3.5  <- ggplot(masculinizado_1980, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
+  geom_line(linewidth = 1) +
+  scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
+                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+  theme_classic()+
+  labs(x = "Year", y = "Union Density") + 
+  facet_wrap(~country, scales = "free") + 
+  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  geom_point(size = 1) + 
+  scale_x_continuous(breaks = seq(2000, 2020, by = 5), limits = c(2000, 2020),expand = c(0.05, 0.05))
+
+figura1.3.5
+
+ggsave(
+  plot = figura1.3.5,
+  filename = "output/figures/figura1.3_1980.png",
+  device = "png",
+  dpi = "retina",
+  units = "cm",
+  width = 30,
+  height = 20
+)
+
+
 
