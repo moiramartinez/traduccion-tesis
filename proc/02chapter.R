@@ -1,5 +1,4 @@
 # Chapter 2 ----
-# Valentina Andrade
 
 #1. Packages
 pacman::p_load(dplyr, ggplot2,
@@ -35,7 +34,7 @@ figure2.1 <- db %>% filter(!is.na(UD), OCDE ==1) %>% group_by(country) %>% filte
              text = paste("Country:", country, "</br>Year:", year))) + 
   geom_bar(stat="identity", color = "black") + scale_fill_viridis_c(name = "") + geom_hline(aes(yintercept = 35.6), linetype = "dashed", color = "gray40") + 
   scale_y_continuous(labels = function(x) paste0(x, "%")) + 
-  labs(x= "", y = "Union Density", caption = "Source: Author's own elaboration based on ICTWSS (2019), with UD latest year. Line indicates mean.") +
+  labs(x= "", y = "Union Density") +
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 40, vjust = 0.63))
 
