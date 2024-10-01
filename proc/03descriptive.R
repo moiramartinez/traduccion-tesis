@@ -61,3 +61,21 @@ data_descr_coverage$coverage <- as.character(data_descr_coverage$coverage)
                                      transpose = TRUE))
 
 view(tabla_descriptiva_coverage, file = 'output/tables/descriptive_table_coverage.html')
+
+
+#----4. Tablas por OCDE ----
+
+data_descr_OCDE <- db %>% ungroup() %>% 
+  select(!c("year", "country", "iso2c", "iso3c", 
+            "code", "continent", "coverage", "region", 
+            "income", "voc"))
+
+data_descr_OCDE$OCDE <- as.character(data_descr_OCDE$OCDE)
+
+(tabla_descriptiva_OCDE <- stby(data      = data_descr_OCDE, 
+                                    INDICES   = data_descr_OCDE$OCDE, 
+                                    FUN       = descr, 
+                                    stats     = c("mean", "med", "max", "min", "sd", "n.valid", "pct.valid"), 
+                                    transpose = TRUE))
+
+view(tabla_descriptiva_OCDE, file = 'output/tables/descriptive_table_OCDE.html')
