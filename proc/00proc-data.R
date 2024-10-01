@@ -32,7 +32,7 @@ db <- db %>%  group_by(country) %>%
          growth_udfempercent = growth_udfem/lag(UD_fem) * 100,
          growth_udmale = UD_male - lag(UD_male),
          growth_udmalepercent = growth_udmale/lag(UD_male) * 100)
-         
+        
          
          
          #growth_e = EPR_MW - lag(EPR_MW),

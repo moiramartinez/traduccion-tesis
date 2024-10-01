@@ -285,78 +285,86 @@ AdjCov
 + ud_fem 2 y ud_male2
 
 ```{r, warning= FALSE}
-ictwss <- openxlsx::read.xlsx('ICTWSS.xlsx',startRow = 2)
-ictwss$country[which(ictwss$country == "United States of America")] <- "United States"
-ictwss <- select(ictwss, country, year, UD, UD_fem, UD_male)
+#ictwss <- openxlsx::read.xlsx('ICTWSS.xlsx',startRow = 2)
+#ictwss$country[which(ictwss$country == "United States of America")] <- "United States"
+#ictwss <- select(ictwss, country, year, UD, UD_fem, UD_male)
 
 ```
 # Merge
 ```{r}
 
-code <- read_excel("iso-code.xlsx")
-code <- code %>% mutate(year = 1956)
-code <- code %>%
-    complete(country, year = 1956:2023) %>% fill(iso2c,iso3c,code, .direction = "down") #cambiar cuando sea 2019
+#code <- read_excel("iso-code.xlsx")
+#code <- code %>% mutate(year = 1956)
+#code <- code %>%
+    #complete(country, year = 1956:2023) %>% fill(iso2c,iso3c,code, .direction = "down") #cambiar cuando sea 2019
     
-central <- merge(code, ictwss, by = c("year","country"), all.y = T)
+#central <- merge(code, ictwss, by = c("year","country"), all.y = T)
 ```
 
 ```{r, echo= FALSE}
-db <- merge(central, gdp1, by = c('year', 'iso3c'), all.x = TRUE, all.y = TRUE)
+# db <- merge(central, gdp1, by = c('year', 'iso3c'), all.x = TRUE, all.y = TRUE)
+# 
+# db <- db %>% rename(GDP = OBS_VALUE)
+# 
+# db <- merge(db, rmw1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
+# 
+# db <- merge(db, lf1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
+# 
+# db <- merge(db, sector1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
+# 
+# db <- merge(db, time1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
+# 
+# db <- merge(db, informal1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
+# 
+# db <- merge(db, alfs1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
 
+```
+
+
+```{r}
+gdp1 <- gdp1 %>%
+  distinct(year, iso3c, .keep_all = TRUE)
+```
+
+
+```{r}
+
+db <- readRDS('../UD_data_proc.rds')
+
+db <- db %>% left_join(gdp1, by = c('year', 'iso3c'))
 db <- db %>% rename(GDP = OBS_VALUE)
 
-db <- merge(db, rmw1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
+db <- db %>% left_join(rmw1, by = c('year', 'iso3c'))
 
-db <- merge(db, lf1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
+db <- db %>% left_join(lf1, by = c('year', 'iso3c'))
 
-db <- merge(db, sector1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
+db <- db %>% left_join(sector1, by = c('year', 'iso3c'))
 
-db <- merge(db, time1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
+db <- db %>% left_join(informal1, by = c('year', 'iso3c'))
 
-db <- merge(db, informal1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
-
-db <- merge(db, alfs1, by = c('year', 'iso3c'), all.x = T, all.y = TRUE)
-
+db <- db %>% left_join(alfs1, by = c('year', 'iso3c'))
 ```
 
-# OCDE members
-
 ```{r}
-
-ocde_countries <- c("AUS", "AUT", "BEL", "CAN", "CHL", "CZE", "DNK", "EST", "FIN", "FRA", "DEU", "GRC", 
-           "HUN", "ISL", "IRL", "ISR", "ITA", "JPN", "KOR", "LUX", "MEX", "NLD", "NZL", "NOR", 
-           "POL", "PRT", "SVK", "SVN", "ESP", "SWE", "CHE", "TUR", "GBR", "USA")
-
-db$OCDE <- ifelse(db$iso3c %in% ocde_countries, 1, 0)
-
-
-```
-
-# Continent
-
-```{r}
+# 4. Variables VoC
+# En base a Hall y Soskice (2001). Estados Bálticos (LMEs), Mediterraneos, Nórdicos, Centrales
 db <- db %>%
-  mutate(continent = ifelse(country %in% c("Argentina", "Brazil", "Chile", "Colombia", "Costa Rica", "Mexico", "Uruguay"),"Latin America",
-                                       ifelse(country  %in% c("United States","Canada"),"North America",
-                                              ifelse(country %in% c("Austria", "Belgium","Bulgaria","Croatia",
-                                                                    "Cyprus", "Czech Republic", "Denmark",
-                                                                    "Estonia", "Finland", "France", "Germany",
-                                                                    "Greece","Hungary", "Ireland", "Italy",
-                                                                    "Latvia", "Lithuania", "Luxembourg","Malta",
-                                                                    "Netherlands", "Norway", "Poland","Portugal","Romania", "Slovak Republic",
-                                                                    "Slovenia", "Spain", "Sweden", "Switzerland",
-                                                                    "United Kingdom"), "Europe",
-                                                     ifelse(country %in% c("Australia", "Iceland","New Zealand"), "Oceania",
-                                                            ifelse(country %in% c("China", "Hong Kong, China",
-                                                                                  "India", "Israel", "Japan",
-                                                                                  "Korea, Republic of",
-                                                                                  "Malaysia", "Russian Federation",
-                                                                                  "Singapore", "Taiwan, China","Turkey", "Indonesia", "Philippines"), "Asia", "Africa"))))))
-```
+  mutate(voc = ifelse(country %in% c("Argentina", "Brazil", "Chile", "Colombia", "Costa Rica", "Mexico", "Uruguay"),"HLEs",
+                            ifelse(country  %in% c("United States","Canada", "United Kingdom", "Australia", "Canada", "New Zealand", "Ireland", "Estonia",
+                                                   "Hungary", "Romania", "Poland", "Russian Federation", "Israel", "Slovak Republic", "Korea, Republic of", "Latvia", "Lithuania"),"LMEs",
+                                   ifelse(country %in% c("Austria", "Belgium", "Denmark", "Finland", "Iceland","Japan", "Germany",
+                                                         "Netherlands", "Norway",  "Sweden", "Switzerland", "Slovenia", "Luxembourg", "Czech Republic"), "CMEs",
+                                                 ifelse(country %in% c("France", "Italy", "Spain","Portugal","Greece","Turkey"), "Ambiguos", "No-Se")))))
 
+# NA in isoc3
+db <- db %>% mutate(iso3c = if_else(is.na(iso3c)&country=="Uruguay", "URY",
+                              if_else(is.na(iso3c)&country=="Slovak Republic", "SVK",
+                                      if_else(is.na(iso3c)&country=="Czech Republic", "CZE",iso3c))))
+```
 
 
 ```{r save, echo = F}
-save(db, file = "database_FDL.RData")
+save(db, file = "database_FDL_AC.RData")
+
+write.xlsx(db, 'database_FDL_AC.xlsx')
 ```

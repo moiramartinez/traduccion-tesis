@@ -71,3 +71,43 @@ db <- db %>% select(-iso2c, -iso3c.y)
 
 db <- db %>% rename(c('iso2c' = 'iso2c.x', 'iso3c' = 'iso3c.x'))
 
+#----6. Variables lag ----
+
+db$UD <- as.numeric(db$UD)
+
+db$UD_fem <- as.numeric(db$UD_fem)
+
+db$UD_male <- as.numeric(db$UD_male)
+
+db <- db %>%  group_by(country) %>%  
+  mutate(growth_ud = UD - lag(UD),
+         growth_udpercent = growth_ud/lag(UD) * 100,
+         growth_udfem = UD_fem - lag(UD_fem),
+         growth_udfempercent = growth_udfem/lag(UD_fem) * 100,
+         growth_udmale = UD_male - lag(UD_male),
+         growth_udmalepercent = growth_udmale/lag(UD_male) * 100)
+
+#----7. Developed countries ----
+
+developed_countries <- c("Denmark", "Germany", "Ireland", "Japan", 
+                         "Norway", "Switzerland", "United Kingdom", "United States", 
+                         "Sweden", "Austria", "Australia", "Canada", 
+                         "France", "Netherlands", "Korea, Republic of", 
+                         "Italy", "Finland", "Spain", "Estonia", 
+                         "Israel", "New Zealand", "Belgium", "Cyprus", 
+                         "Czech Republic", "Greece", "Portugal", "Slovenia", 
+                         "Iceland", "Latvia", "Lithuania", "Malta", 
+                         "Slovak Republic", "Hungary", "Luxembourg")
+
+db <- db %>%
+  mutate(development = ifelse(country %in% developed_countries, 1, 0))
+
+# ----8. FUDI ----
+
+db <- db %>% mutate(fudi= UD_fem/UD_male) 
+                    
+
+#----7. Guardar ----
+
+saveRDS(db, file = 'input/UD_data_proc.rds')
+
