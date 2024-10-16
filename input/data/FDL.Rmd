@@ -274,13 +274,23 @@ Time spent in unpaid work includes: routine housework; shopping; care for househ
 
 Source: [National Time Uses Surveys](https://www.oecd.org/gender/data/time-spent-in-unpaid-paid-and-total-work-by-sex.htm) data set in [OCDE](https://www.oecd.org/gender/data/OECD_1564_TUSupdatePortal.xls)
 
+
 ## ICTWSS
 
-Coord
-UD
-AdjCov
+## Child Penalty
 
 
+```{r, echo= F}
+penalty <- read_csv('penalty_.csv')
+penalty1 <- penalty %>%
+  filter(!name %in% c('Africa', 'Asia', 'Europe', 'Latin America', 'North America', 'Oceania'))
+penalty1 <- penalty1 %>% select(name, iso, penalty) 
+penalty1 <- penalty1 %>% setnames(old = c("name", "iso"), new = c("country", "iso2c"))
+penalty1 <- penalty1 %>% rename('child_penalty' = 'penalty')
+penalty1 <- penalty1 %>% select(iso2c, child_penalty)
+
+
+```
 
 + ud_fem 2 y ud_male2
 
@@ -343,6 +353,14 @@ db <- db %>% left_join(sector1, by = c('year', 'iso3c'))
 db <- db %>% left_join(informal1, by = c('year', 'iso3c'))
 
 db <- db %>% left_join(alfs1, by = c('year', 'iso3c'))
+
+db <- db %>% left_join(gwg1, by = c('year', 'iso3c'))
+
+db <- db %>% left_join(time1, by = c('year', 'iso3c'))
+
+db <- db %>% left_join(penalty1, by = 'iso2c')
+
+
 ```
 
 ```{r}

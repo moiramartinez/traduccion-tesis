@@ -7,50 +7,50 @@ library(sf)
 library(openxlsx)
 
 #---- 2. Cargar bases de datos ----
-#load(file = "input/data/database_FDL.RData")
+load(file = "input/data/database_FDL_AC.RData")
 
-
-ictwss <- openxlsx::read.xlsx('input/data/UD_data.xlsx')
-
-ictwss  <- ictwss  %>%
-  group_by(country) %>%
-  mutate(valid_years = ifelse(!is.na(UD_fem) & UD_fem != "", year, NA)) 
-
-ictwss <- ictwss %>% filter(!is.na(UD_fem))
-
-ictwss <- ictwss %>% filter(UD_fem != " ")
-
-ictwss_2 <- ictwss %>%  
-  summarise(min_year = min(valid_years, na.rm = TRUE), keep_all = TRUE) 
-
-ictwss_2  <- ictwss_2  %>%
-  mutate(coverage = ifelse(substr(as.character(min_year), 1, 2) == "19", 1,
-                           ifelse(substr(as.character(min_year), 1, 2) == "20", 0, NA))) %>%
-  select(country, coverage)
-
-ictwss <- full_join(ictwss, ictwss_2, by = 'country')
-
-ictwss <- ictwss %>% select(-coverage.x, -valid_years)
-
-ictwss <- ictwss %>% rename(coverage = coverage.y)
-
-openxlsx::write.xlsx(ictwss, 'input/data/UD_data.xlsx')
-
-
-
-ictwss$country[which(ictwss$country == "United States of America")] <- "United States"
-
-
-code <- read.xlsx("input/data/iso-code.xlsx")
-code <- code %>% mutate(year = 1960)
-code <- code %>%
-  complete(country, year = 1960:2019) %>% fill(iso2c,iso3c,code, .direction = "down") #cambiar cuando sea 2019
-
-db <- merge(code, ictwss, by = c("year","country"), all.y = T)
-
-db <- db %>% select(-iso2c.y)
-
-db <- db %>% select(-country_code)
+# 
+# ictwss <- openxlsx::read.xlsx('input/data/UD_data.xlsx')
+# 
+# ictwss  <- ictwss  %>%
+#   group_by(country) %>%
+#   mutate(valid_years = ifelse(!is.na(UD_fem) & UD_fem != "", year, NA)) 
+# 
+# ictwss <- ictwss %>% filter(!is.na(UD_fem))
+# 
+# ictwss <- ictwss %>% filter(UD_fem != " ")
+# 
+# ictwss_2 <- ictwss %>%  
+#   summarise(min_year = min(valid_years, na.rm = TRUE), keep_all = TRUE) 
+# 
+# ictwss_2  <- ictwss_2  %>%
+#   mutate(coverage = ifelse(substr(as.character(min_year), 1, 2) == "19", 1,
+#                            ifelse(substr(as.character(min_year), 1, 2) == "20", 0, NA))) %>%
+#   select(country, coverage)
+# 
+# ictwss <- full_join(ictwss, ictwss_2, by = 'country')
+# 
+# ictwss <- ictwss %>% select(-coverage.x, -valid_years)
+# 
+# ictwss <- ictwss %>% rename(coverage = coverage.y)
+# 
+# openxlsx::write.xlsx(ictwss, 'input/data/UD_data.xlsx')
+# 
+# 
+# 
+# ictwss$country[which(ictwss$country == "United States of America")] <- "United States"
+# 
+# 
+# code <- read.xlsx("input/data/iso-code.xlsx")
+# code <- code %>% mutate(year = 1960)
+# code <- code %>%
+#   complete(country, year = 1960:2019) %>% fill(iso2c,iso3c,code, .direction = "down") #cambiar cuando sea 2019
+# 
+# db <- merge(code, ictwss, by = c("year","country"), all.y = T)
+# 
+# db <- db %>% select(-iso2c.y)
+# 
+# db <- db %>% select(-country_code)
 
 #---- 3. Figura 1.1 ----
 # Mapa
@@ -93,16 +93,22 @@ colors <- mypalette(length(levels(world_map_filtered$fudi_bins)))
 world_sf <- st_as_sf(world_map_filtered)
 
 
+
+
 map <- ggplot(data = world_sf) +
-  geom_sf(aes(fill = fudi_bins), color = "black") +  # Añadir color a los bordes
+  geom_sf(aes(fill = fudi_bins), color = "black") + 
   scale_fill_manual(values = colors, na.value = "transparent", 
                     name = "",
-                    labels = c("0 - 0.5", "0.5 - 0.7", "0.7 - 0.9", "0.9 - 1", "1 - 1.3", "1.3 - 1.4", "1.4 - Inf")) +  # Añadir etiquetas a la leyenda
+                    labels = c("0 - 0.5", "0.5 - 0.7", "0.7 - 0.9", "0.9 - 1", "1 - 1.3", "1.3 - 1.4", "1.4-Inf"),
+                    na.translate = F
+  ) +
   theme_void() +
   theme(
-    legend.position = "right",  # Posicionar la leyenda en el costado derecho
-    plot.title = element_text(hjust = 0.5)  # Centrando el título
-  )
+    legend.position = "bottom",  
+    plot.title = element_text(hjust = 0.5)) +
+  guides(fill = guide_legend(nrow = 1))
+  
+
 
 #Guardar
 ggsave('output/figures/figure1.1.jpg')
