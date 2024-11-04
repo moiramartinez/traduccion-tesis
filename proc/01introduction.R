@@ -119,17 +119,12 @@ ggsave('output/figures/figure1.1.jpg')
 #1. Manipular datos 
 #usar db
 
-db_3 <- db %>%
-  mutate(UD_fem = na_if(UD_fem, ""))
-
-db_3 <- db %>%
-  mutate(UD_fem = na_if(UD_fem, " "))
+db$UD_fem <- as.numeric(db$UD_fem)
+db$UD_male <- as.numeric(db$UD_male)
 
 
-db_3$UD_fem <- as.numeric(db_3$UD_fem)
-db_3$UD_male <- as.numeric(db_3$UD_male)
 
-db_3 <- db_3 %>% select(year, country, UD, UD_fem, UD_male, coverage)
+db_3 <- db %>% select(year, country, UD, UD_fem, UD_male, coverage)
 
 db_3 %>%
   group_by(country) %>%
@@ -155,11 +150,11 @@ feminizado$rate <- as.numeric(feminizado$rate)
 figura1.2  <- ggplot(feminizado, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
   geom_line(linewidth = 1) +
   scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
-                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+                      labels=c("Women", "Men"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
   labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
-  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  theme(legend.position = 'bottom', axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
   scale_x_continuous(breaks = seq(1980, 2020, by = 10), limits = c(1980, 2020),expand = c(0.05, 0.05))
 
@@ -185,11 +180,11 @@ feminizado_2obs <- feminizado %>%
 figura1.2.2  <- ggplot(feminizado_2obs, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
   geom_line(linewidth = 1) +
   scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
-                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+                      labels=c("Women", "Men"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
   labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
-  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  theme(legend.position = 'bottom', axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
   scale_x_continuous(breaks = seq(1980, 2020, by = 10), limits = c(1980, 2020),expand = c(0.05, 0.05))
 
@@ -213,11 +208,11 @@ feminizado_4obs <- feminizado %>%
 figura1.2.3  <- ggplot(feminizado_4obs, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
   geom_line(linewidth = 1) +
   scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
-                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+                      labels=c("Women", "Men"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
   labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
-  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  theme(legend.position = 'bottom', axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
   scale_x_continuous(breaks = seq(1980, 2020, by = 10), limits = c(1980, 2020),expand = c(0.05, 0.05))
 
@@ -240,11 +235,11 @@ feminizado_2000 <- feminizado_2000 %>% filter(country != 'Romania')
 figura1.2.4  <- ggplot(feminizado_2000, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
   geom_line(linewidth = 1) +
   scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
-                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+                      labels=c("Women", "Men"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
   labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
-  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  theme(legend.position = 'bottom', axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
   scale_x_continuous(breaks = seq(2000, 2020, by = 5), limits = c(2000, 2020),expand = c(0.05, 0.05))
 
@@ -265,11 +260,11 @@ feminizado_1980 <- feminizado %>% filter(coverage == 1)
 figura1.2.5  <- ggplot(feminizado_1980, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
   geom_line(linewidth = 1) +
   scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
-                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+                      labels=c("Women", "Men"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
   labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
-  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  theme(legend.position = 'bottom', axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
   scale_x_continuous(breaks = seq(1980, 2020, by = 5), limits = c(1980, 2020),expand = c(0.05, 0.05))
 
@@ -299,7 +294,7 @@ masculinizado <- masculinizado %>% filter(country != 'India')
 figura1.3  <- ggplot(masculinizado, aes( x= round(year, digits= 0), y = rate, group = sex, colour = sex)) + 
   geom_line(size = 1) +
   scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
-                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+                      labels=c("Women", "Men"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
   labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
@@ -335,11 +330,11 @@ masculinizado_2obs <- masculinizado_2obs %>% filter(country != 'Philippines')
 figura1.3.2  <- ggplot(masculinizado_2obs, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
   geom_line(linewidth = 1) +
   scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
-                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+                      labels=c("Women", "Men"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
   labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
-  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  theme(legend.position = 'bottom', axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
   scale_x_continuous(breaks = seq(1980, 2020, by = 10), limits = c(1980, 2020),expand = c(0.05, 0.05))
 
@@ -367,11 +362,11 @@ masculinizado_4obs <- masculinizado_4obs %>% filter(country != 'India')
 figura1.3.3  <- ggplot(masculinizado_4obs, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
   geom_line(linewidth = 1) +
   scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
-                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+                      labels=c("Women", "Men"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
   labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
-  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  theme(legend.position = 'bottom', axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
   scale_x_continuous(breaks = seq(1980, 2020, by = 10), limits = c(1980, 2020),expand = c(0.05, 0.05))
 
@@ -387,19 +382,19 @@ ggsave(
   height = 20
 )
 
-masculinizado_2000 <- masculinizado %>% filter(coverage == 0)
 
-masculinizado_2000 <- masculinizado_2000 %>% filter(country != 'Philippines')
+masculinizado_2000 <- masculinizado %>%
+  filter((coverage == 0 | country == "France") & country != "Philippines")
 
 
 figura1.3.4  <- ggplot(masculinizado_2000, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
   geom_line(linewidth = 1) +
   scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
-                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+                      labels=c("Women", "Men"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
   labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
-  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  theme(legend.position = 'bottom', axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
   scale_x_continuous(breaks = seq(2000, 2020, by = 5), limits = c(2000, 2020),expand = c(0.05, 0.05))
 
@@ -415,19 +410,19 @@ ggsave(
   height = 20
 )
 
-masculinizado_1980 <- masculinizado %>% filter(coverage == 1)
+masculinizado_1980 <- masculinizado %>% filter(coverage == 1 & country != "France")
 
 
 figura1.3.5  <- ggplot(masculinizado_1980, aes(x= round(year, digits= 0), y = round(rate, digits = 0), group = sex, colour = sex)) + 
   geom_line(linewidth = 1) +
   scale_colour_manual(name="Union Density", breaks=c("Female", "Male"),
-                      labels=c("Femenine", "Masculine"), values = c(Female = "magenta4", Male = "#0099CC")) + 
+                      labels=c("Women", "Men"), values = c(Female = "magenta4", Male = "#0099CC")) + 
   theme_classic()+
   labs(x = "Year", y = "Union Density") + 
   facet_wrap(~country, scales = "free") + 
-  theme(legend.justification=c(1,0), legend.position.inside = c(1,0), axis.text.x = element_text(size = 5)) +
+  theme(legend.position = 'bottom', axis.text.x = element_text(size = 5)) +
   geom_point(size = 1) + 
-  scale_x_continuous(breaks = seq(2000, 2020, by = 5), limits = c(2000, 2020),expand = c(0.05, 0.05))
+  scale_x_continuous(breaks = seq(1980, 2020, by = 5), limits = c(1980, 2020),expand = c(0.05, 0.05))
 
 figura1.3.5
 
