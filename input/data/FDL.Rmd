@@ -339,7 +339,7 @@ gdp1 <- gdp1 %>%
 
 ```{r}
 
-db <- readRDS('../UD_data_proc.rds')
+db <- openxlsx::read.xlsx('database_FDL_AC.xlsx')
 
 db <- db %>% left_join(gdp1, by = c('year', 'iso3c'))
 db <- db %>% rename(GDP = OBS_VALUE)
@@ -361,23 +361,6 @@ db <- db %>% left_join(time1, by = c('year', 'iso3c'))
 db <- db %>% left_join(penalty1, by = 'iso2c')
 
 
-```
-
-```{r}
-# 4. Variables VoC
-# En base a Hall y Soskice (2001). Estados Bálticos (LMEs), Mediterraneos, Nórdicos, Centrales
-db <- db %>%
-  mutate(voc = ifelse(country %in% c("Argentina", "Brazil", "Chile", "Colombia", "Costa Rica", "Mexico", "Uruguay"),"HLEs",
-                            ifelse(country  %in% c("United States","Canada", "United Kingdom", "Australia", "Canada", "New Zealand", "Ireland", "Estonia",
-                                                   "Hungary", "Romania", "Poland", "Russian Federation", "Israel", "Slovak Republic", "Korea, Republic of", "Latvia", "Lithuania"),"LMEs",
-                                   ifelse(country %in% c("Austria", "Belgium", "Denmark", "Finland", "Iceland","Japan", "Germany",
-                                                         "Netherlands", "Norway",  "Sweden", "Switzerland", "Slovenia", "Luxembourg", "Czech Republic"), "CMEs",
-                                                 ifelse(country %in% c("France", "Italy", "Spain","Portugal","Greece","Turkey"), "Ambiguos", "No-Se")))))
-
-# NA in isoc3
-db <- db %>% mutate(iso3c = if_else(is.na(iso3c)&country=="Uruguay", "URY",
-                              if_else(is.na(iso3c)&country=="Slovak Republic", "SVK",
-                                      if_else(is.na(iso3c)&country=="Czech Republic", "CZE",iso3c))))
 ```
 
 

@@ -8,7 +8,7 @@ pacman::p_load(dplyr, ggplot2, ggsci, tidyr, readxl)
 #lead() next and lag() past; first() el primero
 
 #2. Cargar bases de datos
-load(file = "input/data/database_FDL.RData")
+db <- readRDS(file = "input/data/database_FDL_AC.RData")
 
 # 3. Explorar base
 names(db)
@@ -52,10 +52,12 @@ db <- db %>%
                                                          "Netherlands", "Norway",  "Sweden", "Switzerland", "Slovenia", "Luxembourg", "Czech Republic"), "CMEs",
                                                  ifelse(country %in% c("France", "Italy", "Spain","Portugal","Greece","Turkey"), "Ambiguos", "No-Se")))))
 
-# NA in isoc3
-db <- db %>% mutate(iso3c = if_else(is.na(iso3c)&country=="Uruguay", "URY",
-                              if_else(is.na(iso3c)&country=="Slovak Republic", "SVK",
-                                      if_else(is.na(iso3c)&country=="Czech Republic", "CZE",iso3c))))
+# # NA in isoc3
+# db <- db %>% mutate(iso3c = if_else(is.na(iso3c)&country=="Uruguay", "URY",
+#                               if_else(is.na(iso3c)&country=="Slovak Republic", "SVK",
+#                                       if_else(is.na(iso3c)&country=="Czech Republic", "CZE",iso3c))))
 # 8. Guardar ---
-save(db, file ="input/data/database_FDL.RData")
+save(db, file ="input/data/database_FDL_AC.RData")
+
+openxlsx::write.xlsx(db, 'input/data/database_FDL_AC.xlsx')
 rm(list = ls())

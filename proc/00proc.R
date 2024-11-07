@@ -5,20 +5,20 @@ library(openxlsx)
 library(WDI)
 
 # Abrir BBDD
-db <- openxlsx::read.xlsx('input/data/UD_data.xlsx')
+db <- openxlsx::read.xlsx('input/data/database_FDL_AC.xlsx')
 
-#----2. Variable iso3c ----
-
-code <- read.xlsx("input/data/iso-code.xlsx")
-code <- code %>% mutate(year = 1960)
-code <- code %>%
-  complete(country, year = 1960:2019) %>% fill(iso2c,iso3c,code, .direction = "down")
-
-db <- merge(code, db, by = c("year","country"), all.y = T)
-
-db <- db %>% select(-iso2c.y)
-
-db <- db %>% select(-country_code)
+# #----2. Variable iso3c ----
+# 
+# code <- read.xlsx("input/data/iso-code.xlsx")
+# code <- code %>% mutate(year = 1960)
+# code <- code %>%
+#   complete(country, year = 1960:2019) %>% fill(iso2c,iso3c,code, .direction = "down")
+# 
+# db <- merge(code, db, by = c("year","country"), all.y = T)
+# 
+# db <- db %>% select(-iso2c.y)
+# 
+# db <- db %>% select(-country_code)
 
 #----3. Variable OCDE ----
 
@@ -31,7 +31,7 @@ db$OCDE <- ifelse(db$iso3c %in% ocde_countries, 1, 0)
 #----4. Variable continent ----
 
 db <- db %>%
-  mutate(continent = ifelse(country %in% c("Argentina", "Brazil", "Chile", "Colombia", "Costa Rica", "Mexico", "Uruguay"),"Latin America",
+  mutate(continent = ifelse(country %in% c("Argentina", "Brazil", "Chile", "Colombia", "Costa Rica", "Mexico", "Uruguay", "Colombia"),"Latin America",
                             ifelse(country  %in% c("United States","Canada"),"North America",
                                    ifelse(country %in% c("Austria", "Belgium","Bulgaria","Croatia",
                                                          "Cyprus", "Czech Republic", "Denmark",
@@ -87,20 +87,20 @@ db <- db %>%  group_by(country) %>%
          growth_udmale = UD_male - lag(UD_male),
          growth_udmalepercent = growth_udmale/lag(UD_male) * 100)
 
-#----7. Developed countries ----
-
-developed_countries <- c("Denmark", "Germany", "Ireland", "Japan", 
-                         "Norway", "Switzerland", "United Kingdom", "United States", 
-                         "Sweden", "Austria", "Australia", "Canada", 
-                         "France", "Netherlands", "Korea, Republic of", 
-                         "Italy", "Finland", "Spain", "Estonia", 
-                         "Israel", "New Zealand", "Belgium", "Cyprus", 
-                         "Czech Republic", "Greece", "Portugal", "Slovenia", 
-                         "Iceland", "Latvia", "Lithuania", "Malta", 
-                         "Slovak Republic", "Hungary", "Luxembourg")
-
-db <- db %>%
-  mutate(development = ifelse(country %in% developed_countries, 1, 0))
+# #----7. Developed countries ----
+# 
+# developed_countries <- c("Denmark", "Germany", "Ireland", "Japan", 
+#                          "Norway", "Switzerland", "United Kingdom", "United States", 
+#                          "Sweden", "Austria", "Australia", "Canada", 
+#                          "France", "Netherlands", "Korea, Republic of", 
+#                          "Italy", "Finland", "Spain", "Estonia", 
+#                          "Israel", "New Zealand", "Belgium", "Cyprus", 
+#                          "Czech Republic", "Greece", "Portugal", "Slovenia", 
+#                          "Iceland", "Latvia", "Lithuania", "Malta", 
+#                          "Slovak Republic", "Hungary", "Luxembourg")
+# 
+# db <- db %>%
+#   mutate(development = ifelse(country %in% developed_countries, 1, 0))
 
 # ----8. FUDI ----
 
@@ -109,5 +109,7 @@ db <- db %>% mutate(fudi= UD_fem/UD_male)
 
 #----7. Guardar ----
 
-saveRDS(db, file = 'input/UD_data_proc.rds')
+saveRDS(db, file = 'input/data/database_FDL_AC.RData')
+
+openxlsx::write.xlsx(db, 'input/data/database_FDL_AC.xlsx')
 
